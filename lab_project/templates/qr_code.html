@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}QR Code — {{ lab.lab_name }}{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>QR Code</h1>
+    <p>{{ lab.lab_name }} — {{ lab.lab_type }}</p>
+  </div>
+  <a href="{{ url_for('lab_detail', lab_id=lab.lab_id) }}" class="btn btn-outline">← Back to Lab</a>
+</div>
+
+<div style="display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start;">
+
+  <!-- QR CODE CARD -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">QR Code</div>
+      <span class="badge badge-green">● Ready</span>
+    </div>
+    <div style="padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px;">
+      <div style="background:white;border:2px solid var(--border);border-radius:12px;padding:16px;">
+        <img src="{{ url_for('static', filename=qr_image) }}" alt="QR Code for {{ lab.lab_name }}" style="width:200px;height:200px;display:block;">
+      </div>
+      <div style="text-align:center;">
+        <p style="font-size:15px;font-weight:700;margin-bottom:4px;">{{ lab.lab_name }}</p>
+        <p style="font-size:12px;color:var(--muted2);">{{ lab.lab_location }}</p>
+      </div>
+      <a href="{{ url_for('static', filename=qr_image) }}" download="QR_{{ lab.lab_name }}.png" class="btn btn-primary" style="width:100%;justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download QR Code
+      </a>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card">
+      <div class="card-head"><div class="card-title">QR Code Encodes</div></div>
+      <div style="padding:20px 22px;">
+        <div style="background:#f8fafc;border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blue);word-break:break-all;">
+          {{ qr_url }}
+        </div>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.7;">
+          Scan this QR code with any mobile camera to instantly view the lab details.
+          Print it and stick it on the lab entrance or equipment for quick identification.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Lab Summary</div></div>
+      <div style="padding:4px 0;">
+        {% for label, value in [('Lab ID', lab.lab_id), ('Lab Name', lab.lab_name), ('Location', lab.lab_location), ('Incharge', lab.lab_incharge), ('Type', lab.lab_type), ('Total PCs', lab.total_pc), ('Department', lab.dep_name)] %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 22px;border-bottom:1px solid #f1f5f9;">
+          <span style="font-size:12.5px;color:var(--muted);font-weight:600;">{{ label }}</span>
+          <span style="font-size:13px;font-weight:600;">{{ value }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

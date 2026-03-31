@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — QR Lab System</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Outfit',sans-serif;
+  min-height:100vh;
+  display:flex;
+  background:#f0f4ff;
+}
+/* LEFT PANEL */
+.left-panel{
+  flex:1;
+  background:linear-gradient(145deg,#1e3a8a 0%,#2563eb 50%,#7c3aed 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px;
+  position:relative;overflow:hidden;
+}
+.left-panel::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle at 20% 80%,rgba(124,58,237,0.4) 0%,transparent 50%),
+    radial-gradient(circle at 80% 20%,rgba(37,99,235,0.3) 0%,transparent 50%);
+}
+.left-panel::after{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:36px 36px;
+}
+.left-content{position:relative;z-index:2;text-align:center;color:white;}
+.left-logo{
+  width:72px;height:72px;
+  background:rgba(255,255,255,0.15);
+  border:2px solid rgba(255,255,255,0.25);
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+  backdrop-filter:blur(10px);
+}
+.left-logo svg{width:32px;height:32px;}
+.left-content h1{font-size:32px;font-weight:800;margin-bottom:12px;line-height:1.2;}
+.left-content p{font-size:15px;opacity:0.7;max-width:280px;line-height:1.6;}
+.left-dots{display:flex;gap:8px;justify-content:center;margin-top:32px;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);}
+.dot.active{background:white;width:24px;border-radius:99px;}
+
+/* RIGHT PANEL */
+.right-panel{
+  width:480px;
+  background:white;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:48px 40px;
+  box-shadow:-20px 0 60px rgba(0,0,0,0.08);
+}
+.login-header{width:100%;margin-bottom:36px;}
+.login-header h2{font-size:26px;font-weight:800;color:#0f172a;margin-bottom:6px;}
+.login-header p{font-size:14px;color:#64748b;}
+
+.form-group{width:100%;margin-bottom:20px;}
+label{display:block;font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.input-wrap{position:relative;}
+.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none;}
+.input-icon svg{width:16px;height:16px;}
+input[type=text],input[type=password]{
+  width:100%;padding:13px 14px 13px 44px;
+  border:1.5px solid #e2e8f0;border-radius:12px;
+  font-size:14px;font-family:'Outfit',sans-serif;font-weight:500;
+  color:#0f172a;background:#f8fafc;outline:none;transition:all .2s;
+}
+input::placeholder{color:#cbd5e1;}
+input:focus{border-color:#2563eb;background:white;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.pwd-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:4px;transition:color .15s;}
+.pwd-toggle:hover{color:#475569;}
+.pwd-toggle svg{width:16px;height:16px;display:block;}
+
+.btn-login{
+  width:100%;padding:14px;margin-top:4px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:white;border:none;border-radius:12px;
+  font-size:15px;font-weight:700;font-family:'Outfit',sans-serif;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 16px rgba(37,99,235,.35);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,.45);}
+.btn-login:active{transform:translateY(0);}
+.btn-login svg{width:16px;height:16px;}
+
+.flash{padding:11px 14px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;gap:8px;width:100%;}
+.flash.error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;}
+.flash.success{background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;}
+
+.divider{display:flex;align-items:center;gap:12px;width:100%;margin:24px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e2e8f0;}
+.divider span{font-size:12px;color:#94a3b8;white-space:nowrap;}
+
+.hint-box{
+  width:100%;background:#f8fafc;
+  border:1px solid #e2e8f0;border-radius:12px;
+  padding:14px 16px;
+}
+.hint-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:10px;}
+.hint-row{display:flex;gap:16px;flex-wrap:wrap;}
+.cred-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:white;border:1px solid #e2e8f0;
+  border-radius:8px;padding:5px 10px;font-size:12px;color:#475569;
+}
+.cred-chip strong{font-weight:700;color:#1e40af;}
+
+/* MOBILE */
+@media(max-width:768px){
+  body{flex-direction:column;}
+  .left-panel{
+    flex:none;min-height:200px;padding:32px 24px;
+    border-radius:0 0 28px 28px;
+  }
+  .left-content h1{font-size:24px;}
+  .left-content p{font-size:13px;}
+  .left-dots{margin-top:20px;}
+  .right-panel{
+    width:100%;flex:1;
+    padding:32px 24px;
+    box-shadow:none;
+    border-radius:0;
+  }
+}
+@media(max-width:400px){
+  .left-panel{min-height:160px;padding:24px 16px;}
+  .right-panel{padding:24px 16px;}
+  .login-header h2{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LEFT DECORATIVE PANEL -->
+<div class="left-panel">
+  <div class="left-content">
+    <div class="left-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18v3M20 14v2"/>
+      </svg>
+    </div>
+    <h1>QR Lab<br>Management</h1>
+    <p>Track labs, equipment, PCs & software licenses with QR codes</p>
+    <div class="left-dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT LOGIN PANEL -->
+<div class="right-panel">
+  <div class="login-header">
+    <h2>Welcome back 👋</h2>
+    <p>Sign in to your admin account</p>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">
+        {% if category == 'error' %}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {% else %}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        {% endif %}
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" style="width:100%">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <div class="input-wrap">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </span>
+        <input type="text" id="username" name="username" placeholder="admin" required autocomplete="username">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </span>
+        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        <button type="button" class="pwd-toggle" onclick="togglePwd()">
+          <svg id="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eye-closed" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+    <button type="submit" class="btn-login">
+      Sign In
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </form>
+
+  <div class="divider"><span>default credentials</span></div>
+  <div class="hint-box">
+    <p class="hint-title">Quick Access</p>
+    <div class="hint-row">
+      <div class="cred-chip">👤 User: <strong>admin</strong></div>
+      <div class="cred-chip">🔑 Pass: <strong>admin123</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePwd(){
+  const i=document.getElementById('password');
+  const o=document.getElementById('eye-open');
+  const c=document.getElementById('eye-closed');
+  if(i.type==='password'){i.type='text';o.style.display='none';c.style.display='block';}
+  else{i.type='password';o.style.display='block';c.style.display='none';}
+}
+</script>
+</body>
+</html>

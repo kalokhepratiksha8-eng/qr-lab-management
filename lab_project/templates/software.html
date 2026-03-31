@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Software — QR Lab System{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Software</h1>
+    <p>{{ softwares|length }} software item(s) installed across all labs</p>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">
+  {% for sw in softwares %}
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);animation:fadeUp .4s ease {{ loop.index0 * 0.06 }}s both;transition:all .2s;"
+       onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-lg)'"
+       onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="width:40px;height:40px;border-radius:var(--r);background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/>
+        </svg>
+      </div>
+      <span class="badge badge-purple">{{ sw.license_type }}</span>
+    </div>
+    <p style="font-size:14.5px;font-weight:700;margin-bottom:4px;">{{ sw.software_name }}</p>
+    <p style="font-size:12px;color:var(--muted2);margin-bottom:14px;">Version: {{ sw.version }}</p>
+    <div style="border-top:1px solid #f1f5f9;padding-top:12px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:12px;color:var(--muted);">License Key</span>
+      <span class="badge badge-teal">{{ sw.license_key or 'N/A' }}</span>
+    </div>
+  </div>
+  {% else %}
+  <p style="color:var(--muted2);padding:20px;">No software found in database.</p>
+  {% endfor %}
+</div>
+{% endblock %}

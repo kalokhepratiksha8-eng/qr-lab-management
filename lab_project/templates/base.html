@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}QR Lab System{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #eef1f6;
+  --sidebar: #1a2744;
+  --sidebar-hover: #243458;
+  --sidebar-active: #2e4070;
+  --card: #ffffff;
+  --border: #dce3ef;
+  --blue: #2563eb;
+  --blue2: #1d4ed8;
+  --blue-light: #dbeafe;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --teal: #0891b2;
+  --teal-light: #e0f2fe;
+  --purple: #7c3aed;
+  --purple-light: #f5f3ff;
+  --steel: #4a6fa5;
+  --steel-light: #e8eef7;
+  --text: #0f172a;
+  --text2: #334155;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --shadow: 0 1px 4px rgba(15,23,42,.07), 0 4px 16px rgba(15,23,42,.05);
+  --shadow-lg: 0 8px 32px rgba(15,23,42,.12);
+  --radius: 14px;
+  --r: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 230px;
+  min-height: 100vh;
+  background: var(--sidebar);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  box-shadow: 4px 0 20px rgba(0,0,0,.15);
+}
+.sidebar-brand {
+  display: flex; align-items: center; gap: 11px;
+  padding: 22px 18px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 10px;
+}
+.brand-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg,#3b82f6,#1d4ed8);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37,99,235,.4);
+}
+.brand-text strong { font-size: 13px; font-weight: 700; display: block; color: #f1f5f9; }
+.brand-text span { font-size: 11px; color: #64748b; }
+
+.nav-group { padding: 0 10px; margin-bottom: 4px; }
+.nav-label {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: #475569;
+  padding: 10px 10px 5px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 12px; border-radius: 9px;
+  cursor: pointer; font-size: 13px; font-weight: 500;
+  color: #94a3b8; transition: all .18s;
+  text-decoration: none; margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+.nav-item.active { background: var(--sidebar-active); color: #93c5fd; }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: .85; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  display: flex; align-items: center; gap: 10px;
+}
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg,#3b82f6,#6366f1);
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.user-info strong { font-size: 12.5px; display: block; color: #e2e8f0; }
+.user-info span { font-size: 10.5px; color: #64748b; }
+.online-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e; margin-left: auto;
+  box-shadow: 0 0 0 2px var(--sidebar);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+/* MAIN */
+.main { margin-left: 230px; flex: 1; padding: 28px 32px; min-height: 100vh; }
+
+/* FLASH */
+.flash-list { list-style: none; margin-bottom: 16px; }
+.flash-msg {
+  padding: 10px 16px; border-radius: var(--r);
+  font-size: 13px; font-weight: 500; margin-bottom: 8px;
+}
+.flash-msg.error { background: var(--red-light); color: var(--red); }
+.flash-msg.success { background: var(--green-light); color: var(--green); }
+.flash-msg.info { background: var(--blue-light); color: var(--blue); }
+
+/* TOPBAR */
+.topbar {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 26px;
+}
+.topbar h1 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+.topbar p { font-size: 13px; color: var(--muted); }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: var(--r);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; font-family: inherit; text-decoration: none; transition: all .18s;
+}
+.btn-primary {
+  background: linear-gradient(135deg,#2563eb,#1d4ed8);
+  color: white; box-shadow: 0 2px 10px rgba(37,99,235,.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37,99,235,.4); }
+.btn-outline { background: white; color: var(--muted); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+.btn svg { width: 14px; height: 14px; }
+
+/* CARDS */
+.card {
+  background: var(--card); border-radius: var(--radius);
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+}
+.card-title { font-size: 14.5px; font-weight: 700; }
+.card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; }
+table.dt { width: 100%; border-collapse: collapse; }
+table.dt thead th {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted2);
+  padding: 10px 18px; border-bottom: 1px solid var(--border);
+  text-align: left; white-space: nowrap; background: #f8fafc;
+}
+table.dt tbody tr { transition: background .12s; }
+table.dt tbody tr:hover { background: #f8fafc; }
+table.dt tbody td {
+  padding: 13px 18px; font-size: 13px;
+  border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+}
+table.dt tbody tr:last-child td { border-bottom: none; }
+
+/* BADGES */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 99px;
+  font-size: 11.5px; font-weight: 600;
+}
+.badge-blue { background: var(--blue-light); color: var(--blue); }
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-red { background: var(--red-light); color: var(--red); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+.badge-teal { background: var(--teal-light); color: var(--teal); }
+.badge-purple { background: var(--purple-light); color: var(--purple); }
+.badge-steel { background: var(--steel-light); color: var(--steel); }
+.badge-gray { background: #f1f5f9; color: var(--muted); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+/* STAT CARDS */
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+.stat-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow);
+  position: relative; overflow: hidden; transition: all .2s;
+  animation: fadeUp .4s ease both;
+}
+.stat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.stat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.stat-card.c-blue::before { background: linear-gradient(90deg,#2563eb,#3b82f6); }
+.stat-card.c-teal::before { background: linear-gradient(90deg,#0891b2,#06b6d4); }
+.stat-card.c-green::before { background: linear-gradient(90deg,#16a34a,#22c55e); }
+.stat-card.c-amber::before { background: linear-gradient(90deg,#d97706,#f59e0b); }
+.stat-icon { width:40px; height:40px; border-radius:var(--r); display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+.stat-icon.c-blue { background:var(--blue-light); color:var(--blue); }
+.stat-icon.c-teal { background:var(--teal-light); color:var(--teal); }
+.stat-icon.c-green { background:var(--green-light); color:var(--green); }
+.stat-icon.c-amber { background:var(--amber-light); color:var(--amber); }
+.stat-icon svg { width:18px; height:18px; }
+.stat-label { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted2); margin-bottom:5px; }
+.stat-value { font-size:30px; font-weight:800; font-family:'JetBrains Mono',monospace; color:var(--text); line-height:1; margin-bottom:5px; }
+.stat-sub { font-size:11.5px; color:var(--muted2); }
+
+/* PROGRESS */
+.progress-wrap { height:6px; background:#fee2e2; border-radius:99px; overflow:hidden; margin:10px 0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#2563eb,#3b82f6); border-radius:99px; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* MOBILE OVERLAY */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.active { display: block; }
+
+/* HAMBURGER BUTTON */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 14px; left: 14px;
+  z-index: 200;
+  background: var(--sidebar);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  width: 40px; height: 40px;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.2s;
+}
+.hamburger:hover { background: var(--sidebar-hover); }
+.hamburger svg { width: 18px; height: 18px; color: #94a3b8; }
+
+@media(max-width:900px){
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+}
+
+@media(max-width:768px){
+  /* Hide sidebar by default on mobile */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    z-index: 150;
+    width: 240px;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  /* Show hamburger */
+  .hamburger { display: flex; }
+
+  /* Main takes full width */
+  .main {
+    margin-left: 0;
+    padding: 16px;
+    padding-top: 64px; /* space for hamburger */
+  }
+
+  /* Topbar adjustments */
+  .topbar { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .topbar h1 { font-size: 20px; }
+
+  /* Stats grid single column on small */
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Tables scroll horizontally */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Cards */
+  .card-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+  /* Buttons */
+  .btn { font-size: 12px; padding: 8px 14px; }
+}
+
+@media(max-width:480px){
+  .stats-grid { grid-template-columns: 1fr; }
+  .main { padding: 12px; padding-top: 60px; }
+  .topbar h1 { font-size: 18px; }
+  table.dt thead th, table.dt tbody td { padding: 10px 12px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Hamburger Button -->
+<button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+</button>
+
+<aside class="sidebar" id="mainSidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18v3M20 14v2"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <strong>QR Lab System</strong>
+      <span>DBMS · Mini Project</span>
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <p class="nav-label">Overview</p>
+    <a class="nav-item {% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item {% if request.endpoint in ['labs','lab_detail'] %}active{% endif %}" href="{{ url_for('labs') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+      Labs
+    </a>
+    <a class="nav-item {% if request.endpoint == 'departments' %}active{% endif %}" href="{{ url_for('departments') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>
+      Departments
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <p class="nav-label">Resources</p>
+    <a class="nav-item {% if request.endpoint == 'equipment' %}active{% endif %}" href="{{ url_for('equipment') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+      Equipment
+    </a>
+    <a class="nav-item {% if request.endpoint == 'software' %}active{% endif %}" href="{{ url_for('software') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+      Software
+    </a>
+    <a class="nav-item {% if request.endpoint == 'generate_qr' %}active{% endif %}" href="{{ url_for('labs') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18v3M20 14v2"/></svg>
+      QR Codes
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="avatar">{{ session.username[0].upper() if session.username else 'A' }}</div>
+    <div class="user-info">
+      <strong>{{ session.username or 'Admin' }}</strong>
+      <span>{{ session.role or 'Admin' }}</span>
+    </div>
+    <a href="{{ url_for('logout') }}" title="Logout" style="margin-left:auto;color:#64748b;text-decoration:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+    </a>
+    <div class="online-dot"></div>
+  </div>
+</aside>
+
+<main class="main">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flash-list">
+        {% for category, message in messages %}
+          <li class="flash-msg {{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('mainSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('active');
+}
+function closeSidebar() {
+  document.getElementById('mainSidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+}
+// Close sidebar when nav link clicked on mobile
+document.querySelectorAll('.nav-item').forEach(function(link) {
+  link.addEventListener('click', function() {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
+</script>
+</body>
+</html>

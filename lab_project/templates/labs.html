@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Labs — QR Lab System{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Labs</h1>
+    <p>{{ labs|length }} lab(s) across all departments</p>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;">
+  {% for lab in labs %}
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);transition:all .2s;animation:fadeUp .4s ease {{ loop.index0 * 0.06 }}s both;"
+       onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-lg)'"
+       onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+      <div>
+        <p style="font-size:16px;font-weight:700;margin-bottom:5px;">{{ lab.lab_name }}</p>
+        <span class="badge badge-blue">{{ lab.lab_type }}</span>
+      </div>
+      <span class="badge badge-teal">{{ lab.dep_name }}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div>
+        <p style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted2);font-weight:700;margin-bottom:2px;">Location</p>
+        <p style="font-size:13px;font-weight:500;">{{ lab.lab_location }}</p>
+      </div>
+      <div>
+        <p style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted2);font-weight:700;margin-bottom:2px;">Incharge</p>
+        <p style="font-size:13px;font-weight:500;">{{ lab.lab_incharge }}</p>
+      </div>
+      <div>
+        <p style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted2);font-weight:700;margin-bottom:2px;">Total PCs</p>
+        <p style="font-size:13px;font-weight:500;">{{ lab.total_pc }}</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a href="{{ url_for('lab_detail', lab_id=lab.lab_id) }}" class="btn btn-primary" style="flex:1;justify-content:center;font-size:12.5px;padding:8px 12px;">
+        View Details
+      </a>
+      <a href="{{ url_for('generate_qr', lab_id=lab.lab_id) }}" class="btn btn-outline" style="font-size:12.5px;padding:8px 14px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18v3M20 14v2"/></svg>
+        QR
+      </a>
+    </div>
+  </div>
+  {% else %}
+  <p style="color:var(--muted2);padding:20px;">No labs found in database.</p>
+  {% endfor %}
+</div>
+{% endblock %}

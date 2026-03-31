@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Equipment — QR Lab System{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Equipment</h1>
+    <p>Live status of all lab equipment</p>
+  </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+  <div class="stat-card c-green" style="animation-delay:.05s">
+    <div class="stat-icon c-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <p class="stat-label">Working</p>
+    <p class="stat-value">{{ eq_working }}</p>
+    <p class="stat-sub">In good condition</p>
+  </div>
+  <div class="stat-card c-blue" style="animation-delay:.10s">
+    <div class="stat-icon c-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+    <p class="stat-label">Total</p>
+    <p class="stat-value">{{ eq_total }}</p>
+    <p class="stat-sub">Equipment items</p>
+  </div>
+  <div class="stat-card c-amber" style="animation-delay:.15s">
+    <div class="stat-icon c-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+    <p class="stat-label">Not Working</p>
+    <p class="stat-value">{{ eq_not_working }}</p>
+    <p class="stat-sub">Needs repair</p>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="card" style="animation:fadeUp .4s ease .20s both;">
+  <div class="card-head">
+    <div>
+      <div class="card-title">All Equipment</div>
+      <div class="card-sub">Complete inventory with live status</div>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <button onclick="filterEq('all',this)" id="btn-all" style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--blue);background:var(--blue);color:white;font-family:inherit;">All ({{ eq_total }})</button>
+      <button onclick="filterEq('working',this)" id="btn-working" style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--green);font-family:inherit;">✓ Working ({{ eq_working }})</button>
+      <button onclick="filterEq('notworking',this)" id="btn-notworking" style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--red);font-family:inherit;">✗ Not Working ({{ eq_not_working }})</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="dt" id="eq-table">
+      <thead><tr><th>#</th><th>Equipment Name</th><th>Type</th><th>Lab</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for eq in equipments %}
+        <tr data-status="{{ 'working' if eq.status == 'Working' else 'notworking' }}">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2);">{{ loop.index }}</td>
+          <td style="font-weight:600;">{{ eq.equipment_name }}</td>
+          <td><span class="badge badge-blue">{{ eq.equipment_condition }}</span></td>
+          <td><span class="badge badge-steel">{{ eq.lab_name or 'Unassigned' }}</span></td>
+          <td>
+            {% if eq.status == 'Working' %}
+              <span class="badge badge-green"><span class="status-dot" style="background:#22c55e"></span> Working</span>
+            {% else %}
+              <span class="badge badge-red"><span class="status-dot" style="background:#dc2626"></span> {{ eq.status or 'Not Working' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted2);">No equipment found in database.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function filterEq(type, btn) {
+  document.querySelectorAll('#eq-table tbody tr[data-status]').forEach(r => {
+    r.style.display = (type === 'all' || r.dataset.status === type) ? '' : 'none';
+  });
+  ['all','working','notworking'].forEach(t => {
+    const b = document.getElementById('btn-' + t);
+    b.style.background = 'white'; b.style.color = t==='working'?'var(--green)':t==='notworking'?'var(--red)':'var(--muted)';
+    b.style.borderColor = 'var(--border)';
+  });
+  btn.style.background = 'var(--blue)'; btn.style.color = 'white'; btn.style.borderColor = 'var(--blue)';
+}
+</script>
+{% endblock %}

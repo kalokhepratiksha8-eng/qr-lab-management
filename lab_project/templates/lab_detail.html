@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}{{ lab.lab_name }} — QR Lab System{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>{{ lab.lab_name }}</h1>
+    <p>{{ lab.lab_type }} &nbsp;·&nbsp; {{ lab.dep_name }}</p>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <a href="{{ url_for('labs') }}" class="btn btn-outline">← Back to Labs</a>
+    <a href="{{ url_for('generate_qr', lab_id=lab.lab_id) }}" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18v3M20 14v2"/></svg>
+      Generate QR
+    </a>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+  <!-- Lab Info -->
+  <div class="card">
+    <div class="card-head"><div class="card-title">Lab Information</div></div>
+    <div style="padding:20px 22px;">
+      {% for label, value in [('Lab ID', lab.lab_id), ('Lab Name', lab.lab_name), ('Type', lab.lab_type), ('Location', lab.lab_location), ('Incharge', lab.lab_incharge), ('Total PCs', lab.total_pc), ('Department', lab.dep_name)] %}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+        <span style="font-size:12.5px;color:var(--muted);font-weight:600;">{{ label }}</span>
+        <span style="font-size:13px;font-weight:600;">{{ value }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- PCs -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">PCs in this Lab</div>
+      <span class="badge badge-blue">{{ pcs|length }}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="dt">
+        <thead><tr><th>PC Name</th><th>OS</th><th>RAM</th><th>Storage</th></tr></thead>
+        <tbody>
+          {% for pc in pcs %}
+          <tr>
+            <td style="font-weight:600;">PC-{{ pc.pc_id }}</td>
+            <td>{{ pc.operating_system }}</td>
+            <td>{{ pc.pc_ram }} GB</td>
+            <td>{{ pc.pc_storage }} GB</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted2);">No PCs found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Equipment -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">Equipment in this Lab</div>
+    <span class="badge badge-teal">{{ equipment|length }}</span>
+  </div>
+  <div class="table-wrap">
+    <table class="dt">
+      <thead><tr><th>#</th><th>Equipment Name</th><th>Type</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for eq in equipment %}
+        <tr>
+          <td style="font-size:11px;color:var(--muted2);">{{ loop.index }}</td>
+          <td style="font-weight:600;">{{ eq.equipment_name }}</td>
+          <td><span class="badge badge-blue">{{ eq.equipment_condition }}</span></td>
+          <td>
+            {% if eq.status == 'Working' %}
+              <span class="badge badge-green"><span class="status-dot" style="background:#22c55e"></span> Working</span>
+            {% else %}
+              <span class="badge badge-red"><span class="status-dot" style="background:#dc2626"></span> {{ eq.status or 'Not Working' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted2);">No equipment found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

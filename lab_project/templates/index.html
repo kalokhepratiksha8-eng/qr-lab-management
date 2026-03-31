@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — QR Lab System{% endblock %}
+
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Welcome back, {{ session.username }}! Here's your lab system overview.</p>
+  </div>
+  <a href="{{ url_for('labs') }}" class="btn btn-primary">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18v3M20 14v2"/></svg>
+    Generate QR Code
+  </a>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stats-grid">
+  <div class="stat-card c-blue" style="animation-delay:.05s">
+    <div class="stat-icon c-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+    <p class="stat-label">Total Labs</p>
+    <p class="stat-value">{{ lab_count }}</p>
+    <p class="stat-sub">Across all departments</p>
+  </div>
+  <div class="stat-card c-teal" style="animation-delay:.10s">
+    <div class="stat-icon c-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+    <p class="stat-label">Equipment</p>
+    <p class="stat-value">{{ eq_count }}</p>
+    <p class="stat-sub">Items tracked</p>
+  </div>
+  <div class="stat-card c-green" style="animation-delay:.15s">
+    <div class="stat-icon c-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+    <p class="stat-label">Total PCs</p>
+    <p class="stat-value">{{ pc_count }}</p>
+    <p class="stat-sub">Computers registered</p>
+  </div>
+  <div class="stat-card c-amber" style="animation-delay:.20s">
+    <div class="stat-icon c-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
+    <p class="stat-label">Departments</p>
+    <p class="stat-value">{{ dep_count }}</p>
+    <p class="stat-sub">Connected</p>
+  </div>
+</div>
+
+<!-- EQUIPMENT STATUS -->
+<div class="card" style="margin-bottom:20px;animation:fadeUp .4s ease .25s both;">
+  <div class="card-head">
+    <div>
+      <div class="card-title">Equipment Status Overview</div>
+      <div class="card-sub">Live working condition of all lab equipment</div>
+    </div>
+    <a href="{{ url_for('equipment') }}" class="btn btn-outline">View All →</a>
+  </div>
+  <div style="padding:18px 22px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;gap:18px;">
+        <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+          Working: <strong>{{ eq_working }}</strong>
+        </span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#dc2626;display:inline-block;"></span>
+          Not Working: <strong>{{ eq_notworking }}</strong>
+        </span>
+      </div>
+      <span style="font-size:12px;color:var(--muted2);">Total: {{ eq_count }} items</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-fill" style="width:{% if eq_count > 0 %}{{ ((eq_working / eq_count) * 100)|int }}{% else %}0{% endif %}%;"></div>
+    </div>
+    <p style="font-size:12px;color:var(--muted2);">{% if eq_count > 0 %}{{ ((eq_working / eq_count) * 100)|int }}%{% else %}0%{% endif %} equipment in working condition</p>
+  </div>
+  <div class="table-wrap">
+    <table class="dt">
+      <thead><tr><th>Equipment Name</th><th>Type</th><th>Lab</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for eq in recent_equipment %}
+        <tr>
+          <td style="font-weight:600;">{{ eq.equipment_name }}</td>
+          <td><span class="badge badge-blue">{{ eq.equipment_condition }}</span></td>
+          <td><span class="badge badge-steel">{{ eq.lab_name or 'N/A' }}</span></td>
+          <td>
+            {% if eq.status == 'Working' %}
+              <span class="badge badge-green"><span class="status-dot" style="background:#22c55e"></span> Working</span>
+            {% else %}
+              <span class="badge badge-red"><span class="status-dot" style="background:#dc2626"></span> {{ eq.status or 'Not Working' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted2);">No equipment data found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- QUICK LINKS -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+  <a href="{{ url_for('labs') }}" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:all .2s;animation:fadeUp .4s ease .30s both;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+    <div style="width:46px;height:46px;border-radius:var(--r);background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </div>
+    <span style="font-size:13px;font-weight:600;">View All Labs</span>
+  </a>
+  <a href="{{ url_for('equipment') }}" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:all .2s;animation:fadeUp .4s ease .35s both;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+    <div style="width:46px;height:46px;border-radius:var(--r);background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+    </div>
+    <span style="font-size:13px;font-weight:600;">Equipment Status</span>
+  </a>
+  <a href="{{ url_for('software') }}" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:all .2s;animation:fadeUp .4s ease .40s both;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+    <div style="width:46px;height:46px;border-radius:var(--r);background:var(--amber-light);color:var(--amber);display:flex;align-items:center;justify-content:center;margin-bottom:4px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+    </div>
+    <span style="font-size:13px;font-weight:600;">Software</span>
+  </a>
+</div>
+{% endblock %}

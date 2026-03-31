@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Departments — QR Lab System{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Departments</h1>
+    <p>{{ departments|length }} department(s) registered</p>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+  {% for dep in departments %}
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);animation:fadeUp .4s ease {{ loop.index0 * 0.07 }}s both;transition:all .2s;"
+       onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-lg)'"
+       onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:44px;height:44px;border-radius:var(--r);background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="5"/><path d="M4 21v-1a8 8 0 0116 0v1"/>
+        </svg>
+      </div>
+      <div>
+        <p style="font-size:15px;font-weight:700;margin-bottom:3px;">{{ dep.dep_name }}</p>
+        <p style="font-size:12px;color:var(--muted2);">{{ dep.dep_code if dep.dep_code else 'N/A' }}</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid #f1f5f9;">
+      <span style="font-size:13px;color:var(--muted);">Labs</span>
+      <span class="badge badge-blue">{{ dep.lab_count }}</span>
+    </div>
+    {% if dep.hod_name %}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid #f1f5f9;">
+      <span style="font-size:13px;color:var(--muted);">HOD</span>
+      <span style="font-size:13px;font-weight:600;">{{ dep.hod_name }}</span>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <p style="color:var(--muted2);padding:20px;">No departments found.</p>
+  {% endfor %}
+</div>
+{% endblock %}
