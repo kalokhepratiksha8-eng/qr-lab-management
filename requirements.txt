@@ -1,4 +1,5 @@
-flask
-qrcode
-pillow
-gunicorn
+Flask==3.0.3
+gunicorn==21.2.0
+qrcode==7.4.2
+pillow==10.3.0
+mysql-connector-python==8.4.0
